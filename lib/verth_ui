@@ -218,6 +218,11 @@ exports.render = function() {
         exports.harvest()
         return;
       }
+      if (this.value == 'clear dom') {
+        exports.widgets['topRight'].setContent('')
+        exports.screen.render()
+        return;
+      }
       if (this.value == 'p') {
         var target = exports.widgets['bottomRight'].value.split('  ')
         exports.target = {
@@ -384,7 +389,6 @@ exports.scan = function(){                                                      
 
   });
 }
-
 
 harvest.on('harvested', function(creds) {
   exports.widgets['scanner'].setContent( exports.widgets['scanner'].getContent() + "\n" + creds)
