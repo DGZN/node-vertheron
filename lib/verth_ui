@@ -285,7 +285,7 @@ exports.render = function() {
 
 exports.toWidget = function(target, message, clear){
   var content = exports.widgets[target].getContent()
-  if (clear)
+  if (clear || content.split('\n').length < 2)
     content = ''
   exports.widgets[target].setContent(content + "\n" + message);
   exports.lines = content.split('\n').length
@@ -407,6 +407,9 @@ exports.deepScan = function (target){
     var parseString = require('xml2js').parseString;
 
     parseString(hosts, function (err, result){
+
+      if (! result.nmaprun.host[0].os[0].hasOwnProperty('osmatch') ||
+          ! result.nmaprun.host[0].os[0].osmatch[0] ) return;
 
       var osResults = JSON.parse(JSON.stringify(result.nmaprun.host[0].os[0].osmatch[0].osclass))
 
