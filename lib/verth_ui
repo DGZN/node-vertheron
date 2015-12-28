@@ -24,8 +24,8 @@ exports.init = function(){
   });
 
   exports.screen.key(['escape', 'q', 'C-c'], function(ch, key) {
-    if ( exports.harvesting == true) {
-      exports.harvesting = false
+    if ( exports.harvesting == true || exports.deepScanning == true) {
+      exports.harvesting = exports.deepScanning = false;
       exports.widgets['scanner'].detach();
       return exports.screen.render()
     } else {
@@ -218,6 +218,11 @@ exports.render = function() {
         exports.harvest()
         return;
       }
+      if (this.value == 'deep scan') {
+        exports.deepScanning = true
+        exports.deepScan(exports.target)
+        return;
+      }
       if (this.value == 'clear dom') {
         exports.widgets['topRight'].setContent('')
         exports.screen.render()
@@ -388,6 +393,41 @@ exports.scan = function(){                                                      
     });
 
   });
+}
+
+exports.deepScan = function (target){
+
+  exec('nmap -oX - -v -A ' + target.IP, function(err, stdout, stderr){
+
+    if (err)
+      return console.log('!ERROR!', err)
+
+    var hosts = stdout
+
+    var parseString = require('xml2js').parseString;
+
+    parseString(hosts, function (err, result){
+
+      var osResults = JSON.parse(JSON.stringify(result.nmaprun.host[0].os[0].osmatch[0].osclass))
+
+      var matches = '';
+
+      for (var i in osResults) {
+        var props = osResults[i].$
+        matches += '[*] ::'+props.type+' '+props.vendor+' '+props.osfamily+' '+props.osgen+' '+props.accuracy+'% :: \n';
+      }
+
+      if (matches.length) {
+        exports.screen.append(exports.widgets['scanner']);
+        exports.screen.render()
+        exports.toWidget('scanner', matches, true)
+      }
+
+    });
+
+  });
+
+  exports.screen.render()
 }
 
 harvest.on('harvested', function(creds) {
