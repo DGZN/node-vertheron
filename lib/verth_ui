@@ -30,6 +30,8 @@ exports.init = function(){
       exports.widgets['scanner'].detach();
       return exports.screen.render()
     } else {
+      if (!exports.target)
+        return process.exit(0);
       exports.emit('heal', exports.target, exports.gateway);
       setTimeout(function(){
         process.exit(0);
@@ -132,28 +134,35 @@ exports.render = function() {
   exports.widgets['bottomRight'].select(0);
 
   exports.widgets['bottomRight'].on('keypress', function(ch, key) {
-    if (key.name === 'enter') {
-      if (this.value == 'stop') {
-        exports.emit('heal', exports.target, exports.gateway);
-        return;
-      }
-      if (this.value == 'kill') {
-        return process.exit(0);
-      }
-      if (this.value == 'find targets') {
-        return exports.scan()
-      }
-      exports.widgets['left'].setContent('{yellow-fg}Poisioning --> IP ' + this.value + '{/yellow-fg}')
-      var target = this.value.split('   ')
-      exports.target = {
-        IP: target[0]
-      , MAC: target[1] // "10:a5:d0:49:ac:cc"
-      }
-      exports.self.IP = exports.gateway.IP
-      exports.emit('poision', exports.target, exports.self);
-      exports.widgets['cli'].focus()
-      exports.screen.render()
-      return;
+    switch (key.name) {
+      case 'enter':
+        if (this.value == 'stop') {
+          exports.emit('heal', exports.target, exports.gateway);
+          return;
+        }
+        if (this.value == 'kill') {
+          return process.exit(0);
+        }
+        if (this.value == 'find targets') {
+          return exports.scan()
+        }
+        exports.widgets['left'].setContent('{yellow-fg}Poisioning --> ' + this.value + '{/yellow-fg}')
+        var target = this.value.split('   ')
+        exports.target = {
+          IP: target[0]
+        , MAC: target[1] // "10:a5:d0:49:ac:cc"
+        }
+        exports.self.IP = exports.gateway.IP
+        exports.emit('poision', exports.target, exports.self);
+        exports.widgets['cli'].focus()
+        exports.screen.render()
+        break;
+      case 'space':
+        exports.deepScanning = true
+        exports.deepScan(getIP(this.value))
+        exports.widgets['left'].setContent('{yellow-fg} OS Scanning --> ' + this.value + '{/yellow-fg}')
+        exports.screen.render()
+      break;
     }
   });
 
@@ -182,6 +191,10 @@ exports.render = function() {
 
   exports.widgets['cli'].key('C-v', function(ch, key) {
     exports.sliceTop('left')
+  });
+
+  exports.widgets['cli'].key('C-d', function(ch, key) {
+    exports.toWidget('topRight', '{center}{bold} {red-fg}~^~ {/red-fg} DOM Hijacks: {red-fg}~^~{/red-fg} {/bold}\n{/center}', true)
   });
 
   exports.widgets['cli'].on('keypress', function(ch, key) {
@@ -242,6 +255,7 @@ exports.render = function() {
         exports.screen.render()
         return;
       }
+      console.log("")
     }
   })
 
@@ -320,7 +334,7 @@ exports.scan = function(){                                                      
 
   cidr = exports.cidr(ip.address())
 
-  exports.toWidget('left', '{center}{bold} \n\n\n\n\n\  {red-fg} ^*^ Scanning Hosts ^*^ {/red-fg}\n\n{white-fg}       ::' + cidr.range + '::    {/white-fg} {/bold}{/center}', true)
+  exports.toWidget('left', '{center}{bold} \n\n\n\n\n\  {red-fg} _ Scanning Hosts _ {/red-fg}\n\n{white-fg}       ' + cidr.range + '    {/white-fg} {/bold}{/center}', true)
 
   exports.widgets['bottomRight'].clearItems()
 
@@ -395,7 +409,9 @@ exports.scan = function(){                                                      
 
 exports.deepScan = function (target){
 
-  exec('nmap -oX - -v -A ' + target.IP, function(err, stdout, stderr){
+  if (!target) return;
+
+  exec('nmap -oX - -v -A ' + target, function(err, stdout, stderr){
 
     if (err)
       return console.log('!ERROR!', err)
@@ -406,20 +422,27 @@ exports.deepScan = function (target){
 
     parseString(hosts, function (err, result){
 
-      var osResults = JSON.parse(JSON.stringify(result.nmaprun.host[0].os[0].osmatch[0].osclass))
-
       var matches = '';
 
-      for (var i in osResults) {
-        var props = osResults[i].$
-        matches += '[*] ::'+props.type+' '+props.vendor+' '+props.osfamily+' '+props.osgen+' '+props.accuracy+'% :: \n';
+      if (!result.nmaprun.host ||
+          !result.nmaprun.host[0].os[0].osmatch) {
+
+        matches = '[X] ::_ (: unable to detect target OS _:: [X]'
+
+      } else {
+
+        var osResults = JSON.parse(JSON.stringify(result.nmaprun.host[0].os[0].osmatch[0].osclass))
+
+        for (var i in osResults) {
+          var props = osResults[i].$
+          matches += '[*] ::'+props.type || '' +' '+props.vendor || '' +' '+props.osfamily || '' +' '+props.osgen || '' +' '+props.accuracy+'% :: \n';
+        }
+
       }
 
-      if (matches.length) {
-        exports.screen.append(exports.widgets['scanner']);
-        exports.screen.render()
-        exports.toWidget('scanner', matches, true)
-      }
+      exports.screen.append(exports.widgets['scanner']);
+      exports.screen.render()
+      exports.toWidget('scanner', matches, true)
 
     });
 
@@ -429,8 +452,7 @@ exports.deepScan = function (target){
 }
 
 harvest.on('harvested', function(creds) {
-  exports.widgets['scanner'].setContent( exports.widgets['scanner'].getContent() + "\n" + creds)
-  exports.screen.render()
+  exports.toWidget('scanner', exports.widgets['scanner'].getContent() + "\n" + creds, true)
 })
 
 exports.harvest = function(){
@@ -444,4 +466,9 @@ exports.cidr = function(ip){
     range: range.join('.')+'.1/24'
   , gateway: range.join('.')+'.1'
   }
+}
+
+function getIP(signature){
+  var target = signature.split('   ')
+  return target[0]
 }
