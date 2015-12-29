@@ -6,6 +6,7 @@
 blessed = require('blessed');
 contrib = require('blessed-contrib')
 harvest = require('./harvest'),
+ xml2js = require('xml2js').parseString,
    gmac = require('getmac');
    exec = require('child_process').exec
 
@@ -142,11 +143,11 @@ exports.render = function() {
       if (this.value == 'find targets') {
         return exports.scan()
       }
-      exports.widgets['left'].setContent('{yellow-fg}Poisioning --> ' + this.value + '{/yellow-fg}')
-      var target = this.value.split('    ')
+      exports.widgets['left'].setContent('{yellow-fg}Poisioning --> IP ' + this.value + '{/yellow-fg}')
+      var target = this.value.split('   ')
       exports.target = {
         IP: target[0]
-      , MAC: "10:a5:d0:49:ac:cc" // target[1].replace(' ','')
+      , MAC: target[1] // "10:a5:d0:49:ac:cc"
       }
       exports.self.IP = exports.gateway.IP
       exports.emit('poision', exports.target, exports.self);
@@ -319,7 +320,7 @@ exports.scan = function(){                                                      
 
   cidr = exports.cidr(ip.address())
 
-  exports.toWidget('left', '{center}{bold} \n\n\n\n\n\  {red-fg} --~ Scanning Hosts ~-- {/red-fg}\n\n{white-fg}        ^' + cidr.range + '^    {/white-fg} {/bold}{/center}', true)
+  exports.toWidget('left', '{center}{bold} \n\n\n\n\n\  {red-fg} ^*^ Scanning Hosts ^*^ {/red-fg}\n\n{white-fg}       ::' + cidr.range + '::    {/white-fg} {/bold}{/center}', true)
 
   exports.widgets['bottomRight'].clearItems()
 
@@ -328,12 +329,7 @@ exports.scan = function(){                                                      
     if (err)
       return console.log('!ERROR!', err)
 
-    var hosts = stdout
-
-    var parseString = require('xml2js').parseString;
-
-    parseString(hosts, function (err, result){
-
+    xml2js(stdout, function (err, result){
       var results = JSON.parse(JSON.stringify(result))
       var targets = []
       for (var i in results.nmaprun.host) {
@@ -361,14 +357,16 @@ exports.scan = function(){                                                      
           address.push(targets[i].ipv4)
         target_content += ' :' + address.join(' : ') + ':', '\n'
       }
-
-      var targetData = []
+      var targetData = [], targetCount = 0;
       for (i in targets) {
         var target = targets[i]
         if (target.ipv4.length) {
           if (target.ipv4 !== ip.address()) {
-            _target = '  ' + target.ipv4 + ((target.ipv4.length < 9) ? ' ' : '') + (target.mac ? '   ' + target.mac : '') + (target.vendor ? '   ' + target.vendor : '')
-            exports.widgets['bottomRight'].addItem( _target )
+            _target = '  ' + target.ipv4 + ((target.ipv4.length < 9) ? ' ' : '')
+            + (target.mac    ? '   ' + target.mac    : '')
+            + (target.vendor ? '   ' + target.vendor : '')
+            targetCount++
+            exports.widgets['bottomRight'].addItem(_target)
           } else {
             gmac.getMac(function(err, mac){
               if (err)  throw err
@@ -386,9 +384,9 @@ exports.scan = function(){                                                      
           }
         }
       }
-
       exports.widgets['scanner'].toggle()
       exports.widgets['bottomRight'].focus()
+      exports.toWidget('left', '{center}{bold} \n\n\n\n\n\  {red-fg} :: ' + targetCount + ' targets found :: {/red-fg}{/bold}{/center}', true)
       exports.screen.render()
     });
 
