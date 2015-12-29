@@ -417,7 +417,7 @@ exports.deepScan = function (target){
 
       for (var i in osResults) {
         var props = osResults[i].$
-        matches += '[*] ::'+props.type+' '+props.vendor+' '+props.osfamily+' '+props.osgen+' '+props.accuracy+'% :: \n';
+        matches += '[*] :: '+props.type+' '+props.vendor+' '+props.osfamily+' '+props.osgen+' '+props.accuracy+'% :: \n';
       }
 
       if (matches.length) {
