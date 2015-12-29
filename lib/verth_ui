@@ -451,11 +451,16 @@ exports.deepScan = function (target){
   exports.screen.render()
 }
 
+var harvested = 0
 harvest.on('harvested', function(creds) {
+  if (harvested == 0)
+    exports.toWidget('scanner', '', true)
   exports.toWidget('scanner', exports.widgets['scanner'].getContent() + "\n" + creds, true)
+  harvested++
 })
 
 exports.harvest = function(){
+  exports.toWidget('scanner', '{center}{bold} {red-fg} :: Harvesting Stolen Credentials :: {/red-fg}{/bold}{/center} ', true)
   harvest.collect()
 }
 
