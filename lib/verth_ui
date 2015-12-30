@@ -74,7 +74,7 @@ exports.render = function() {
     top: '2%',
     right: '0',
     width: '30%',
-    height: '80%',
+    height: '70%',
     content: '{center}{bold} {red-fg}~^~ {/red-fg} DOM Hijacks: {red-fg}~^~{/red-fg} {/bold}\n{/center}',
     tags: true,
     border: {
@@ -97,9 +97,9 @@ exports.render = function() {
       selectedFg: 'red',
       selectedBg: 'black',
       right: '0',
-      top: '82%',
+      top: '72%',
       width: '30%',
-      height: '15%',
+      height: '28%',
       inputOnFocus: true,
       fg: 'white',
       bg: 'black',
@@ -147,20 +147,18 @@ exports.render = function() {
           return exports.scan()
         }
         exports.widgets['left'].setContent('{yellow-fg}Poisioning --> ' + this.value + '{/yellow-fg}')
-        var target = this.value.split('   ')
-        exports.target = {
-          IP: target[0]
-        , MAC: target[1] // "10:a5:d0:49:ac:cc"
-        }
+        var target = getHost(this.value)
+        exports.target = getHost(this.value)
         exports.self.IP = exports.gateway.IP
         exports.emit('poision', exports.target, exports.self);
         exports.widgets['cli'].focus()
         exports.screen.render()
         break;
       case 'space':
+        var host = getHost(this.value)
         exports.deepScanning = true
-        exports.deepScan(getIP(this.value))
-        exports.widgets['left'].setContent('{yellow-fg} OS Scanning --> ' + this.value + '{/yellow-fg}')
+        exports.deepScan(getHost(this.value))
+        exports.widgets['left'].setContent('{center}{yellow-fg} OS Scanning --> ' + host.IP + '{/yellow-fg}{/center}')
         exports.screen.render()
       break;
     }
@@ -376,7 +374,16 @@ exports.scan = function(){                                                      
         var target = targets[i]
         if (target.ipv4.length) {
           if (target.ipv4 !== ip.address()) {
-            _target = '  ' + target.ipv4 + ((target.ipv4.length < 9) ? ' ' : '')
+            var targetIP = target.ipv4;
+            switch (targetIP.length) {
+              case 11:
+                targetIP += '  '
+                break;
+              case 12:
+                targetIP += ' '
+                break;
+            }
+            _target = '  ' + targetIP
             + (target.mac    ? '   ' + target.mac    : '')
             + (target.vendor ? '   ' + target.vendor : '')
             targetCount++
@@ -411,7 +418,11 @@ exports.deepScan = function (target){
 
   if (!target) return;
 
-  exec('nmap -oX - -v -A ' + target, function(err, stdout, stderr){
+  exports.toWidget('left', '{center}{bold} \n\n\n\n\n\  {red-fg} :: TARGETING ' + target.IP + ' :: {/red-fg}{/bold}{/center}', true)
+  exports.screen.render()
+
+
+  exec('nmap -oX - -v -A ' + target.IP, function(err, stdout, stderr){
 
     if (err)
       return console.log('!ERROR!', err)
@@ -435,7 +446,7 @@ exports.deepScan = function (target){
 
         for (var i in osResults) {
           var props = osResults[i].$
-          matches += '[*] ::'+props.type || '' +' '+props.vendor || '' +' '+props.osfamily || '' +' '+props.osgen || '' +' '+props.accuracy+'% :: \n';
+          matches += '[*]' + props.type || '' + '\n' + props.vendor || '' + ':' + props.osfamily || '' + ' ' + props.osgen || '' + ' ' + props.accuracy + '%';
         }
 
       }
@@ -474,6 +485,14 @@ exports.cidr = function(ip){
 }
 
 function getIP(signature){
-  var target = signature.split('   ')
+  var target = signature.split('    ')
   return target[0]
+}
+
+function getHost(signature){
+  var target = signature.split(/[ ,]+/)
+  return {
+    IP: target[0]
+  , MAC: target[1] // "10:a5:d0:49:ac:cc"
+  }
 }
