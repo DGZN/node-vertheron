@@ -7,6 +7,7 @@ blessed = require('blessed');
 contrib = require('blessed-contrib')
 harvest = require('./harvest'),
  xml2js = require('xml2js').parseString,
+    arp = require('./arp'),
    gmac = require('getmac');
    exec = require('child_process').exec
 
@@ -404,6 +405,13 @@ exports.scan = function(){                                                      
           }
         }
       }
+
+      // var staticTarget = '   192.168.3.148    10:a5:d0:49:ac:cc'
+      // exports.widgets['bottomRight'].addItem(staticTarget)
+
+
+
+
       exports.widgets['scanner'].toggle()
       exports.widgets['bottomRight'].focus()
       exports.toWidget('left', '{center}{bold} \n\n\n\n\n\  {red-fg} :: ' + targetCount + ' targets found :: {/red-fg}{/bold}{/center}', true)
@@ -462,15 +470,17 @@ exports.deepScan = function (target){
 }
 
 var harvested = 0
+
 harvest.on('harvested', function(creds) {
   if (harvested == 0)
     exports.toWidget('scanner', '', true)
+  console.log("GOT SOMETHING BACK");
   exports.toWidget('scanner', exports.widgets['scanner'].getContent() + "\n" + creds, true)
   harvested++
 })
 
 exports.harvest = function(){
-  exports.toWidget('scanner', '{center}{bold} {red-fg} :: Harvesting Stolen Credentials :: {/red-fg}{/bold}{/center} ', true)
+  exports.toWidget('scanner', '{bold} {red-fg} :: Harvesting Stolen Credentials :: {/red-fg}{/bold}', true)
   harvest.collect()
 }
 

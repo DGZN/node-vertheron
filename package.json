@@ -13,15 +13,19 @@
     "blessed-contrib": "^2.4.1",
     "cli-color": "^1.1.0",
     "connect": "^3.4.0",
+    "exec": "^0.2.1",
     "express": "^4.13.3",
     "forever": "^0.15.1",
     "getmac": "^1.0.7",
+    "http": "0.0.0",
     "http-proxy": "^1.11.2",
     "ip": "^1.1.0",
     "lazy": "^1.0.11",
+    "pcap-parser": "^0.2.1",
     "socket.io": "^1.3.7",
     "socketwatcher": "^0.3.0",
     "transformer-proxy": "^0.3.1",
+    "url": "^0.11.0",
     "xml2js": "^0.4.13"
   }
 }

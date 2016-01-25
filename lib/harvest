@@ -10,7 +10,7 @@ var exports = module.exports = new events.EventEmitter();
 
 exports.collect = function(){
   setTimeout(function(){
-    new lazy(fs.createReadStream('sslstrip.log'))
+    new lazy(fs.createReadStream('sslstrip.log.BACKUP'))
        .lines
        .forEach(function(line){
          var username = '';
