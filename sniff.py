@@ -112,11 +112,6 @@ class Scapy80211():
 
 # main routine
 if __name__ == "__main__":
-    print """
-[*] 802.11 Scapy Packet Crafting Example
-[*] Assumes 'wlan0' is your wireless NIC!
-[*] Author: Joff Thyer, 2014
-"""
     sdot11 = Scapy80211(intf='en1')
     #sdot11.Beacon()
     sdot11.ProbeReq()
