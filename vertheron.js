@@ -7,7 +7,7 @@
            proxy = require('./lib/verthProxy'),
 transformerProxy = require('transformer-proxy');
 
-arp.setInterface('en0')
+arp.setInterface('en1')
 ui.init()
 logger.mount(ui)
 proxy.init()

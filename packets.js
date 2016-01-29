@@ -5,7 +5,7 @@ const lazy = require('lazy');
 const spawn = require('child_process').spawn;
 
 const filter = 'wlan.fc.type==0 && (wlan.fc.subtype==4 || wlan.fc.subtype==5)'
-const tShark = spawn('tshark', ['-I', '-p', '-S', '[EOP]', '-V' ]);
+const tShark = spawn('tshark', ['-I', '-i', 'en1', '-p', '-S', '[EOP]', '-V' ]);
 
 var body = ''
 var parser = new lazy()
@@ -38,7 +38,7 @@ tShark.on('close', () => {
 
 var errors = 0;
 tShark.stderr.on('data', (err) => {
-  if (errors++ > 1)
+  //if (errors++ > 1)
     error(err)
 })
 
