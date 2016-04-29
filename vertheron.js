@@ -12,19 +12,19 @@ ui.init()
 logger.mount(ui)
 proxy.init()
 
-proxy.on('output', function (data) {
+proxy.on('output', (data) => {
   ui.toWidget(data.target, data.message)
 })
 
-logger.on('output', function (data) {
+logger.on('output', (data) => {
   ui.toWidget(data.target, data.message)
 })
 
-ui.on('poision', function (target, self) {
+ui.on('poision', (target, self) => {
   arp.poison(target, self);
 });
 
-ui.on('heal', function (target, gateway) {
+ui.on('heal', (target, gateway) => {
   arp.heal(target, gateway);
   proxy.stopSSLStripAttack()
 })
