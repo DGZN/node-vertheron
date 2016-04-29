@@ -8,7 +8,7 @@ contrib = require('blessed-contrib')
 harvest = require('./harvest'),
  xml2js = require('xml2js').parseString,
     arp = require('./arp'),
-   gmac = require('getmac');
+   macaddress = require('macaddress');
    exec = require('child_process').exec
 
 var exports = module.exports = new events.EventEmitter();
@@ -339,7 +339,9 @@ exports.scan = function(){                                                      
   exec('nmap -oX - -sP ' + cidr.range, function(err, stdout, stderr){
 
     if (err)
-      return console.log('!ERROR!', err)
+      return console.log(require('util').inspect({
+        error: err
+      }));
 
     xml2js(stdout, function (err, result){
       var results = JSON.parse(JSON.stringify(result))
@@ -389,11 +391,11 @@ exports.scan = function(){                                                      
             targetCount++
             exports.widgets['bottomRight'].addItem(_target)
           } else {
-            gmac.getMac(function(err, mac){
+            macaddress.one('en1', (err, mac) => {
               if (err)  throw err
               exports.self = {
                 IP: target.ipv4
-              , MAC: 'c8:e0:eb:29:11:e7'                                        // NEED TO FIX SOURCE MAC
+              , MAC: mac
               }
             })
           }
@@ -406,15 +408,9 @@ exports.scan = function(){                                                      
         }
       }
 
-      // var staticTarget = '   192.168.3.148    10:a5:d0:49:ac:cc'
-      // exports.widgets['bottomRight'].addItem(staticTarget)
-
-
-
-
       exports.widgets['scanner'].toggle()
       exports.widgets['bottomRight'].focus()
-      exports.toWidget('left', '{center}{bold} \n\n\n\n\n\  {red-fg} :: ' + targetCount + ' targets found :: {/red-fg}{/bold}{/center}', true)
+      exports.toWidget('left', '{center}{bold} \n\n\n\n\n\  {red-fg} :: ' + targetCount + ' Targets Found :: {/red-fg}{/bold}{/center}', true)
       exports.screen.render()
     });
 
@@ -502,6 +498,6 @@ function getHost(signature){
   var target = signature.split(/[ ,]+/)
   return {
     IP: target[0]
-  , MAC: target[1] // "10:a5:d0:49:ac:cc"
+  , MAC: target[1]
   }
 }

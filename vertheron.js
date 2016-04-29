@@ -3,20 +3,21 @@
        httpProxy = require('http-proxy'),
               ui = require('./lib/verth_ui'),
              arp = require('./lib/poision'),
-          logger = require('./lib/verthLogger'),
+         monitor = require('./lib/verthLogger'),
            proxy = require('./lib/verthProxy'),
 transformerProxy = require('transformer-proxy');
 
-arp.setInterface('en1')
-ui.init()
-logger.mount(ui)
-proxy.init()
+function Vertheron(){
+  arp.setInterface(process.argv[2] || 'en0')
+  monitor.mount(ui.init())
+  proxy.init()
+}
 
 proxy.on('output', (data) => {
   ui.toWidget(data.target, data.message)
 })
 
-logger.on('output', (data) => {
+monitor.on('output', (data) => {
   ui.toWidget(data.target, data.message)
 })
 
@@ -28,3 +29,5 @@ ui.on('heal', (target, gateway) => {
   arp.heal(target, gateway);
   proxy.stopSSLStripAttack()
 })
+
+Vertheron()
