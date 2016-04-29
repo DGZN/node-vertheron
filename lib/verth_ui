@@ -393,7 +393,7 @@ exports.scan = function(){                                                      
               if (err)  throw err
               exports.self = {
                 IP: target.ipv4
-              , MAC: 'c8:e0:eb:29:11:e7'
+              , MAC: 'c8:e0:eb:29:11:e7'                                        // NEED TO FIX SOURCE MAC
               }
             })
           }
