@@ -1,11 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 
 export default class App extends Component {
+
   static propTypes = {
     children: PropTypes.element.isRequired
   };
 
   render() {
+    
+    console.log("APP PROPS", this.props);
     return (
       <div>
         {this.props.children}
