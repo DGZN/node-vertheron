@@ -1,12 +1,9 @@
 {
-  "name": "vertheron",
-  "productName": "Vertheron",
-  "version": "0.0.1",
-  "description": "Electron Pen Testing Framework",
+  "name": "electron-react-boilerplate",
+  "productName": "ElectronReact",
+  "version": "0.10.0",
+  "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
   "main": "main.js",
-  "directories": {
-    "test": "test"
-  },
   "scripts": {
     "test": "cross-env NODE_ENV=test mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",
     "test-watch": "npm test -- --watch",
@@ -26,6 +23,28 @@
   "bin": {
     "electron": "./node_modules/.bin/electron"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DGZN/vertheron.git.git"
+  },
+  "author": {
+    "name": "DGZN",
+    "email": "digizn@gmail.com"
+  },
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DGZN/vertheron.git/issues"
+  },
+  "keywords": [
+    "electron",
+    "boilerplate",
+    "react",
+    "react-router",
+    "flux",
+    "webpack",
+    "react-hot"
+  ],
+  "homepage": "https://github.com/DGZN/vertheron.git#readme",
   "devDependencies": {
     "asar": "^0.11.0",
     "babel-core": "^6.7.6",
@@ -95,15 +114,5 @@
   "devEngines": {
     "node": "4.x || 5.x || 6.x",
     "npm": "2.x || 3.x"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DGZN/vertheron.git"
-  },
-  "author": "DGZN",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/DGZN/vertheron/issues"
-  },
-  "homepage": "https://github.com/DGZN/vertheron#readme"
+  }
 }
