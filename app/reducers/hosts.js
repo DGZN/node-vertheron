@@ -1,21 +1,21 @@
-import { REQUEST_HOSTS, RECEIVE_HOSTS } from '../actions/hosts';
+import { ERROR_SCANNING, REQUEST_HOSTS, RECEIVE_HOSTS} from '../actions/hosts'
 
-function hosts(state = {
+export default function hosts(state = {
   isScanning: false,
-  didInvalidate: false,
-  hosts: []
+  errorScanning: false,
+  macs: []
 }, action) {
   switch (action.type) {
     case REQUEST_HOSTS:
       return Object.assign({}, state, {
         isScanning: true,
-        didInvalidate: false
+        errorScanning: false
       })
     case RECEIVE_HOSTS:
       return Object.assign({}, state, {
         isScanning: false,
-        didInvalidate: false,
-        hosts: action.hosts,
+        errorScanning: false,
+        macs: action.hosts,
         lastScanned: action.scannedAt
       })
     default:

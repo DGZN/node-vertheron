@@ -1,9 +1,12 @@
 {
-  "name": "electron-react-boilerplate",
-  "productName": "ElectronReact",
-  "version": "0.10.0",
-  "description": "Electron application boilerplate based on React, React Router, Webpack, React Hot Loader for rapid application development",
+  "name": "vertheron",
+  "productName": "Vertheron",
+  "version": "0.0.1",
+  "description": "Electron Pen Testing Framework",
   "main": "main.js",
+  "directories": {
+    "test": "test"
+  },
   "scripts": {
     "test": "cross-env NODE_ENV=test mocha --compilers js:babel-register --recursive --require ./test/setup.js test/**/*.spec.js",
     "test-watch": "npm test -- --watch",
@@ -23,29 +26,6 @@
   "bin": {
     "electron": "./node_modules/.bin/electron"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/chentsulin/electron-react-boilerplate.git"
-  },
-  "author": {
-    "name": "C. T. Lin",
-    "email": "chentsulin@gmail.com",
-    "url": "https://github.com/chentsulin"
-  },
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/chentsulin/electron-react-boilerplate/issues"
-  },
-  "keywords": [
-    "electron",
-    "boilerplate",
-    "react",
-    "react-router",
-    "flux",
-    "webpack",
-    "react-hot"
-  ],
-  "homepage": "https://github.com/chentsulin/electron-react-boilerplate#readme",
   "devDependencies": {
     "asar": "^0.11.0",
     "babel-core": "^6.7.6",
@@ -95,9 +75,12 @@
     "webpack-hot-middleware": "^2.10.0"
   },
   "dependencies": {
+    "connect": "^3.4.1",
     "css-modules-require-hook": "^4.0.0",
     "electron-debug": "^0.6.0",
     "font-awesome": "^4.6.1",
+    "http-proxy": "^1.13.3",
+    "ip": "^1.1.3",
     "postcss": "^5.0.19",
     "react": "^15.0.1",
     "react-dom": "^15.0.1",
@@ -106,10 +89,21 @@
     "react-router-redux": "^4.0.2",
     "redux": "^3.4.0",
     "redux-thunk": "^2.0.1",
-    "source-map-support": "^0.4.0"
+    "source-map-support": "^0.4.0",
+    "transformer-proxy": "^0.3.3"
   },
   "devEngines": {
     "node": "4.x || 5.x || 6.x",
     "npm": "2.x || 3.x"
-  }
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DGZN/vertheron.git"
+  },
+  "author": "DGZN",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/DGZN/vertheron/issues"
+  },
+  "homepage": "https://github.com/DGZN/vertheron#readme"
 }

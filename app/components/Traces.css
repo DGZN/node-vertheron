@@ -1,0 +1,44 @@
+.traceTab {
+  position: absolute;
+  top: 2rem;
+  left: 0.1rem;
+  width: 99%;
+  height: 90%;
+  overflow: scroll;
+  background: rgba(0,0,0,1);
+  border-radius: 15px;
+  border: 1px solid rgba(122,122,122,.4);
+}
+
+.traceTab li {
+  font-size: 0.9em;
+  position: relative;
+  margin: 0.5 rem;
+  line-height: 1.5rem;
+}
+
+.method {
+  color: #14d3e5;
+}
+
+.url {
+  font-size: 0.8em;
+  position: relative;
+  margin-left: 0.5rem;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+.code {
+  font-size: 0.8em;
+  position: relative;
+  margin-left: 0.8rem;
+  color: #1cd731;
+}
+
+.ip {
+  font-size: 0.8em;
+  position: relative;
+  margin-left: 0.5rem;
+  color: #930004;
+}

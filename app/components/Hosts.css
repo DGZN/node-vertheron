@@ -1,0 +1,15 @@
+.hostsTab {
+  position: absolute;
+  bottom: 2rem;
+  right: 1rem;
+  width: 25%;
+  background: rgba(0,0,0,1);
+  border-radius: 15px;
+  border: 1px solid rgba(122,122,122,.4);
+}
+
+.hostsTab li {
+  position: relative;
+  margin: 0.5 rem;
+  line-height: 1.5rem;
+}
